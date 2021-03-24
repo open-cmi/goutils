@@ -1,0 +1,3 @@
+model:
+  type: sqlite3
+  filename: example.sqlite
