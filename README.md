@@ -13,3 +13,10 @@ root_path/
   data/xxx.log
 
 ```
+
+# how to use
+
+```
+cd examples/src
+go run main.go
+```
