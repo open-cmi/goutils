@@ -19,6 +19,7 @@ func MongoInit() error {
 	port := config.Conf.GetStringMap("model")["port"].(int)
 	user := config.Conf.GetStringMap("model")["user"].(string)
 	password := config.Conf.GetStringMap("model")["password"].(string)
+	dbname := config.Conf.GetStringMap("model")["dbname"].(string)
 
 	uri := "mongodb://" + host + ":" + strconv.Itoa(port)
 	if user != "" {
