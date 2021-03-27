@@ -21,7 +21,15 @@ func main() {
 	logger.Printf("hello")
 
 	err = dbsql.SQLInit()
-	fmt.Println(err)
+	if err != nil {
+		rows, err := dbsql.DBSql.Query("select datname from pg_database")
+		fmt.Println(rows, err)
+		for rows.Next() {
+			var dat string
+			rows.Scan(&dat)
+			fmt.Printf("database: %s\n", dat)
+		}
+	}
 
 	id := "00000-00-0000000-0000"
 	valid := verify.UUIDIsValid(id)

@@ -9,6 +9,8 @@ import (
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
+var maxConnections int = 50
+
 // DBSql sql
 var DBSql *sql.DB
 
@@ -18,6 +20,8 @@ func SQLInit() (err error) {
 	dbtype := config.Conf.GetStringMap("model")["type"].(string)
 	if dbtype == "sqlite3" {
 		return SQLite3Init()
+	} else if dbtype == "postgresql" || dbtype == "pg" {
+		return PostgresqlInit()
 	}
 	return errors.New("db not support")
 }
