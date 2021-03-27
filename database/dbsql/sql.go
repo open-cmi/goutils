@@ -12,7 +12,7 @@ import (
 var maxConnections int = 50
 
 // DBSql sql
-var DBSql *sql.DB
+var DBSql *sql.DB = nil
 
 // SQLInit init
 func SQLInit() (err error) {
@@ -27,6 +27,7 @@ func SQLInit() (err error) {
 }
 
 func SQLFini() {
-	DBSql.Close()
-	return
+	if DBSql != nil {
+		DBSql.Close()
+	}
 }

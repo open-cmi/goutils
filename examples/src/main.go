@@ -21,9 +21,11 @@ func main() {
 	logger.Printf("hello")
 
 	err = dbsql.SQLInit()
-	if err != nil {
+	if err == nil {
 		rows, err := dbsql.DBSql.Query("select datname from pg_database")
-		fmt.Println(rows, err)
+		if err != nil {
+			return
+		}
 		for rows.Next() {
 			var dat string
 			rows.Scan(&dat)
