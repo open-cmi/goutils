@@ -16,22 +16,26 @@ import (
 var Logger *log.Logger
 
 var LogFullPath string = ""
+var LogDir string = ""
 
-func SetLogOption(p string) {
-	LogFullPath = p
+func SetLogDir(p string) {
+	LogDir = p
 }
 
 func FormatLogPath(t *time.Time) string {
 	executable, _ := os.Executable()
 	procname := path.Base(executable)
 	newfile := fmt.Sprintf("%s-%d-%d-%d.log", procname, t.Year(), t.Month()+1, t.Day())
-	rp := common.GetRootPath()
-	logDir := filepath.Join(rp, "data")
-	if !goutils.IsExist(logDir) {
-		os.MkdirAll(logDir, os.ModePerm)
+	if LogDir == "" {
+		rp := common.GetRootPath()
+		LogDir = filepath.Join(rp, "log")
 	}
 
-	fullpath := filepath.Join(rp, "data", newfile)
+	if !goutils.IsExist(LogDir) {
+		os.MkdirAll(LogDir, os.ModePerm)
+	}
+
+	fullpath := filepath.Join(LogDir, newfile)
 	return fullpath
 }
 
