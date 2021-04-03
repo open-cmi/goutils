@@ -31,6 +31,16 @@ func main() {
 			rows.Scan(&dat)
 			fmt.Printf("database: %s\n", dat)
 		}
+
+		rows, err = dbsql.DBSql.Query("select username from users")
+		if err != nil {
+			return
+		}
+		for rows.Next() {
+			var name string
+			rows.Scan(&name)
+			fmt.Printf("username: %s\n", name)
+		}
 	}
 
 	id := "00000-00-0000000-0000"

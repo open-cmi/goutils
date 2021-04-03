@@ -34,13 +34,13 @@ func PostgresqlInit() (err error) {
 		if err != nil {
 			return err
 		}
-		db.Close()
+	}
+	db.Close()
 
-		dbstr = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, port, database)
-		db, err = sql.Open("postgres", dbstr)
-		if err != nil {
-			return err
-		}
+	dbstr = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, port, database)
+	db, err = sql.Open("postgres", dbstr)
+	if err != nil {
+		return err
 	}
 
 	db.SetMaxOpenConns(maxConnections)

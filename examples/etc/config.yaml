@@ -1,9 +1,9 @@
 model:
-  type: sqlite3
-  filename: example.sqlite
-  #type: 'postgresql'
-  #host: '127.0.0.1'
-  #port: 5432
-  #user: 'postgres'
-  #password: ''
-  #database: 'postgres'
+  #type: sqlite3
+  #filename: example.sqlite
+  type: 'postgresql'
+  host: '127.0.0.1'
+  port: 25432
+  user: 'postgres'
+  password: ''
+  database: 'test_mi4'
