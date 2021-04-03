@@ -7,9 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Conf conf
-var Conf *viper.Viper
-
 type ConfigOption struct {
 	ConfigPath string
 	FileName   string
@@ -22,12 +19,11 @@ func SetConfigOption(configPath string, filename string, format string) {
 	option.ConfigPath = configPath
 	option.FileName = filename
 	option.Format = format
-	return
 }
 
 // InitConfig init config
-func InitConfig() (err error) {
-	Conf = viper.New()
+func InitConfig() (conf *viper.Viper, err error) {
+	parser := viper.New()
 	// init default option
 	if option.ConfigPath == "" {
 		root := common.GetRootPath()
@@ -40,12 +36,12 @@ func InitConfig() (err error) {
 		option.Format = "yaml"
 	}
 
-	Conf.AddConfigPath(option.ConfigPath)
-	Conf.SetConfigName(option.FileName)
-	Conf.SetConfigType(option.Format)
-	if err = Conf.ReadInConfig(); err != nil {
-		return err
+	parser.AddConfigPath(option.ConfigPath)
+	parser.SetConfigName(option.FileName)
+	parser.SetConfigType(option.Format)
+	if err = parser.ReadInConfig(); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return parser, nil
 }

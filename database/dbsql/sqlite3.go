@@ -3,23 +3,17 @@ package dbsql
 import (
 	"database/sql"
 	"os"
-	"path"
-	"path/filepath"
 
 	"github.com/open-cmi/goutils"
-	"github.com/open-cmi/goutils/common"
-	"github.com/open-cmi/goutils/config"
+
+	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
 // SQLite3Init init
-func SQLite3Init() (err error) {
-	filename := config.Conf.GetStringMap("model")["filename"].(string)
-
-	dbfile := path.Join(common.GetRootPath(), "data", filename)
+func SQLite3Init(conf *Config) (db *sql.DB, err error) {
+	dbfile := conf.File
 	// if filename is absolute path, use file name directly
-	if filepath.IsAbs(filename) {
-		dbfile = filename
-	}
+
 	var file *os.File
 	if !goutils.IsExist(dbfile) {
 		file, err = os.OpenFile(dbfile, os.O_CREATE|os.O_RDWR, 0755)
@@ -29,6 +23,6 @@ func SQLite3Init() (err error) {
 		defer file.Close()
 	}
 
-	DBSql, err = sql.Open("sqlite3", dbfile)
-	return err
+	db, err = sql.Open("sqlite3", dbfile)
+	return db, err
 }

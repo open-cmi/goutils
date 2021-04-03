@@ -4,23 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/open-cmi/goutils/config"
-
 	_ "github.com/lib/pq"
 )
 
 // PostgresqlInit init
-func PostgresqlInit() (err error) {
-	host := config.Conf.GetStringMap("model")["host"].(string)
-	port := config.Conf.GetStringMap("model")["port"].(int)
-	user := config.Conf.GetStringMap("model")["user"].(string)
-	password := config.Conf.GetStringMap("model")["password"].(string)
-	database := config.Conf.GetStringMap("model")["database"].(string)
+func PostgresqlInit(conf *Config) (db *sql.DB, err error) {
+	host := conf.Host
+	port := conf.Port
+	user := conf.User
+	password := conf.Password
+	database := conf.Database
 
 	dbstr := fmt.Sprintf("postgres://%s:%s@%s:%d/postgres?sslmode=disable", user, password, host, port)
-	db, err := sql.Open("postgres", dbstr)
+	db, err = sql.Open("postgres", dbstr)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	dbstr = fmt.Sprintf("select datname from pg_database where datname='%s'", database)
@@ -32,7 +30,7 @@ func PostgresqlInit() (err error) {
 		createdb := fmt.Sprintf("create database %s", database)
 		_, err = db.Exec(createdb)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 	db.Close()
@@ -40,10 +38,9 @@ func PostgresqlInit() (err error) {
 	dbstr = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, port, database)
 	db, err = sql.Open("postgres", dbstr)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	db.SetMaxOpenConns(maxConnections)
-	DBSql = db
-	return nil
+	return db, nil
 }

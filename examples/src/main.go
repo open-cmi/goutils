@@ -14,15 +14,23 @@ func main() {
 	rp := common.GetRootPath()
 	fmt.Println(rp)
 
-	err := config.InitConfig()
+	conf, err := config.InitConfig()
 	fmt.Println(err)
 
 	logger := logutils.GetLogger()
 	logger.Printf("hello")
 
-	err = dbsql.SQLInit()
+	var dbconf dbsql.Config
+	dbconf.Type = conf.GetStringMap("model")["type"].(string)
+	dbconf.Host = conf.GetStringMap("model")["host"].(string)
+	dbconf.Port = conf.GetStringMap("model")["port"].(int)
+	dbconf.User = conf.GetStringMap("model")["user"].(string)
+	dbconf.Password = conf.GetStringMap("model")["password"].(string)
+	dbconf.Database = conf.GetStringMap("model")["database"].(string)
+
+	db, err := dbsql.SQLInit(&dbconf)
 	if err == nil {
-		rows, err := dbsql.DBSql.Query("select datname from pg_database")
+		rows, err := db.Query("select datname from pg_database")
 		if err != nil {
 			return
 		}
@@ -32,7 +40,7 @@ func main() {
 			fmt.Printf("database: %s\n", dat)
 		}
 
-		rows, err = dbsql.DBSql.Query("select username from users")
+		rows, err = db.Query("select username from users")
 		if err != nil {
 			return
 		}
