@@ -5,12 +5,13 @@ import (
 	"os"
 
 	"github.com/open-cmi/goutils"
+	"github.com/open-cmi/goutils/database"
 
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
 // SQLite3Init init
-func SQLite3Init(conf *Config) (db *sql.DB, err error) {
+func SQLite3Init(conf *database.Config) (db *sql.DB, err error) {
 	dbfile := conf.File
 	// if filename is absolute path, use file name directly
 

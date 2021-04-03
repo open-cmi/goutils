@@ -5,6 +5,7 @@ import (
 
 	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/config"
+	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
 	"github.com/open-cmi/goutils/logutils"
 	"github.com/open-cmi/goutils/verify"
@@ -20,7 +21,7 @@ func main() {
 	logger := logutils.GetLogger()
 	logger.Printf("hello")
 
-	var dbconf dbsql.Config
+	var dbconf database.Config
 	dbconf.Type = conf.GetStringMap("model")["type"].(string)
 	dbconf.Host = conf.GetStringMap("model")["host"].(string)
 	dbconf.Port = conf.GetStringMap("model")["port"].(int)

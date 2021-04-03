@@ -5,10 +5,11 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
+	"github.com/open-cmi/goutils/database"
 )
 
 // PostgresqlInit init
-func PostgresqlInit(conf *Config) (db *sql.DB, err error) {
+func PostgresqlInit(conf *database.Config) (db *sql.DB, err error) {
 	host := conf.Host
 	port := conf.Port
 	user := conf.User

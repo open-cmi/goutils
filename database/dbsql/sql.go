@@ -3,22 +3,14 @@ package dbsql
 import (
 	"database/sql"
 	"errors"
+
+	"github.com/open-cmi/goutils/database"
 )
 
 var maxConnections int = 50
 
-type Config struct {
-	Type     string
-	File     string
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Database string
-}
-
 // SQLInit init
-func SQLInit(conf *Config) (db *sql.DB, err error) {
+func SQLInit(conf *database.Config) (db *sql.DB, err error) {
 	// Mongo, _ = database.NewMongoDB("usual", 27017, "test")
 	dbtype := conf.Type
 	if dbtype == "sqlite3" {
