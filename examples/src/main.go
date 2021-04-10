@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/config"
+	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
 	"github.com/open-cmi/goutils/logutils"
@@ -51,6 +53,11 @@ func main() {
 			fmt.Printf("username: %s\n", name)
 		}
 	}
+
+	var yconf map[string]interface{}
+	parser := confparser.New(filepath.Join(rp, "etc", "config.yaml"))
+	parser.Load(&yconf)
+	fmt.Println(yconf)
 
 	id := "00000-00-0000000-0000"
 	valid := verify.UUIDIsValid(id)
