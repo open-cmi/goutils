@@ -17,6 +17,9 @@ func main() {
 	rp := common.GetRootPath()
 	fmt.Println(rp)
 
+	cur := common.Getwd()
+	fmt.Println(cur)
+
 	conf, err := config.InitConfig()
 	fmt.Println(err)
 
