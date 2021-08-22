@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/open-cmi/goutils/common"
+	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
@@ -14,10 +14,10 @@ import (
 )
 
 func main() {
-	rp := common.GetRootPath()
+	rp := goutils.GetRootPath()
 	fmt.Println(rp)
 
-	cur := common.Getwd()
+	cur := goutils.Getwd()
 	fmt.Println(cur)
 
 	conf, err := config.InitConfig()
