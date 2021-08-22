@@ -10,12 +10,18 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Parser parser struct
 type Parser struct {
 	fd     *os.File
 	format string
 }
 
+// New create a new parser
 func New(file string) *Parser {
+	if file == "" {
+		return nil
+	}
+
 	var format string = ""
 	if strings.HasSuffix(file, ".yaml") || strings.HasSuffix(file, ".yml") {
 		format = "yaml"
@@ -34,6 +40,7 @@ func New(file string) *Parser {
 	}
 }
 
+// Load load data from file description
 func (p *Parser) Load(v interface{}) (err error) {
 	p.fd.Seek(0, 0)
 
@@ -51,6 +58,7 @@ func (p *Parser) Load(v interface{}) (err error) {
 	}
 }
 
+// Save save data to file
 func (p *Parser) Save(v interface{}) (err error) {
 	p.fd.Seek(0, 0)
 
