@@ -9,6 +9,7 @@ import (
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
+	"github.com/open-cmi/goutils/device"
 	"github.com/open-cmi/goutils/logutils"
 	"github.com/open-cmi/goutils/verify"
 )
@@ -69,4 +70,7 @@ func main() {
 	id = "00000000-0000-0000-0000-000000000000"
 	valid = verify.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
+
+	devid := device.GetDeviceID()
+	fmt.Printf("device id: %s\n", devid)
 }
