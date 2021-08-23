@@ -22,10 +22,11 @@ func SetLogDir(p string) {
 	LogDir = p
 }
 
+// FormatLogPath format path
 func FormatLogPath(t *time.Time) string {
 	executable, _ := os.Executable()
 	procname := path.Base(executable)
-	newfile := fmt.Sprintf("%s-%d-%d-%d.log", procname, t.Year(), t.Month()+1, t.Day())
+	newfile := fmt.Sprintf("%s-%d-%d-%d.log", procname, t.Year(), t.Month(), t.Day())
 	if LogDir == "" {
 		rp := common.GetRootPath()
 		LogDir = filepath.Join(rp, "log")
@@ -39,6 +40,7 @@ func FormatLogPath(t *time.Time) string {
 	return fullpath
 }
 
+// Ticker ticker
 func Ticker() {
 	// 每半小时检测一下时间
 	ticker := time.NewTicker(30 * 60 * time.Second)
