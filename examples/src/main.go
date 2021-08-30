@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/open-cmi/goutils"
+	"github.com/open-cmi/goutils/cmdctl"
 	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
@@ -73,4 +74,7 @@ func main() {
 
 	devid := device.GetDeviceID()
 	fmt.Printf("device id: %s\n", devid)
+
+	output, err := cmdctl.ExecSync("ls -alh")
+	fmt.Println(output, err)
 }

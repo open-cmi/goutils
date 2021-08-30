@@ -146,7 +146,7 @@ func New(name string, conf *ProcessConfig) error {
 	return nil
 }
 
-// Start start process
+// Start start process async
 func Start(name string) (err error) {
 	p := ProcessContainer[name]
 	if p == nil {
@@ -170,6 +170,20 @@ func Stop(name string) (err error) {
 // Release release process
 func (p *Process) Release() {
 	ProcessContainer[p.Name] = nil
+}
+
+// ExecSync exec command sync
+func ExecSync(cmdstring string) (string, error) {
+	args := strings.Split(cmdstring, " ")
+	var cmd *exec.Cmd
+	if len(args) >= 1 {
+		cmd = exec.Command(args[0], args[1:]...)
+	} else {
+		cmd = exec.Command(args[0])
+	}
+
+	outbyte, err := cmd.Output()
+	return string(outbyte), err
 }
 
 func init() {
