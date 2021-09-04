@@ -69,6 +69,10 @@ func main() {
 	valid := verify.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
 
+	email := "fed33ei.coma"
+	valid = verify.EmailIsValid(email)
+	fmt.Printf("email %s verify %t\n", email, valid)
+
 	id = "00000000-0000-0000-0000-000000000000"
 	valid = verify.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
