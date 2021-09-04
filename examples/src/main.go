@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/open-cmi/goutils"
@@ -77,4 +78,7 @@ func main() {
 
 	output, err := cmdctl.ExecSync("ls -alh")
 	fmt.Println(output, err)
+
+	ppid := os.Getppid()
+	fmt.Println(cmdctl.ParentIsRunning(ppid))
 }
