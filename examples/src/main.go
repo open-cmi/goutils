@@ -89,7 +89,7 @@ func main() {
 
 	usr, _ := user.Current()
 	rsaFile := filepath.Join(usr.HomeDir, ".ssh/id_rsa")
-	s := goutils.NewSSHServer("110.42.144.218", 8009, 1, "root", "", rsaFile)
+	s := goutils.NewSSHServer("110.42.144.218", 22, 1, "root", "", rsaFile)
 	client, err := s.SSHConnect()
 
 	fmt.Println(client, err)
