@@ -68,7 +68,6 @@ func GetDeviceID() string {
 	sys = runtime.GOOS
 	if sys == "darwin" {
 		deviceid = GetDarwinProductID()
-		// system_profiler SPHardwareDataType | awk '/Hardware UUID:/ {print $NF}'
 	} else if sys == "windows" {
 		deviceid = "windows_test"
 	} else {

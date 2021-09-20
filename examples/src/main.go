@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 
 	"github.com/open-cmi/goutils"
@@ -85,4 +86,14 @@ func main() {
 
 	ppid := os.Getppid()
 	fmt.Println(cmdctl.ParentIsRunning(ppid))
+
+	usr, _ := user.Current()
+	rsaFile := filepath.Join(usr.HomeDir, ".ssh/id_rsa")
+	s := goutils.NewSSHServer("110.42.144.218", 8009, 1, "root", "", rsaFile)
+	client, err := s.SSHConnect()
+
+	fmt.Println(client, err)
+
+	s.SSHRun("ls")
+	s.SSHCopyToRemote("main.go", "main_remote.go")
 }
