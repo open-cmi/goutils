@@ -37,6 +37,11 @@ func GetRootPath() string {
 
 // Getwd get pwd
 func Getwd() string {
+	return GetExecutePath()
+}
+
+// GetExecutePath 获取执行路径
+func GetExecutePath() string {
 	execFile, err := os.Executable()
 	if err != nil {
 		return ""

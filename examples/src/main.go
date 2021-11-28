@@ -8,6 +8,7 @@ import (
 
 	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/cmdctl"
+	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
@@ -18,7 +19,7 @@ import (
 )
 
 func main() {
-	rp := goutils.GetRootPath()
+	rp := common.GetRootPath()
 	fmt.Println(rp)
 
 	cur := goutils.Getwd()
@@ -27,8 +28,8 @@ func main() {
 	conf, err := config.InitConfig()
 	fmt.Println(err)
 
-	logger := logutils.GetLogger()
-	logger.Printf("hello")
+	logutils.Init(filepath.Join(rp, "log"))
+	logutils.Info.Printf("hello")
 
 	var dbconf database.Config
 	dbconf.Type = conf.GetStringMap("model")["type"].(string)
