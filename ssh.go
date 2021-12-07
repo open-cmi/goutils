@@ -15,25 +15,18 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const (
-	// ConnTypePassword password
-	ConnTypePassword = iota
-	// ConnTypeSecretKey secret key
-	ConnTypeSecretKey = 1
-)
-
 // SSHServer ssh server
 type SSHServer struct {
 	Host       string `json:"host"`
 	Port       int    `json:"port"`
 	User       string `json:"user"`
-	ConnType   int    `json:"conntype"`
+	ConnType   string `json:"conntype"`
 	Password   string `json:"password"`
 	SecretFile string `json:"secretfile"`
 }
 
 // NewSSHServer new ssh server
-func NewSSHServer(host string, port int, conntype int, user string, password string, secretfile string) *SSHServer {
+func NewSSHServer(host string, port int, conntype string, user string, password string, secretfile string) *SSHServer {
 	var server SSHServer = SSHServer{
 		User:       user,
 		Password:   password,
@@ -57,7 +50,7 @@ func (s *SSHServer) SSHConnect() (*ssh.Client, error) {
 	// get auth method
 	auth = make([]ssh.AuthMethod, 0)
 
-	if s.ConnType == 0 {
+	if s.ConnType == "password" {
 		auth = append(auth, ssh.Password(s.Password))
 	} else {
 		key, err := ioutil.ReadFile(s.SecretFile)
@@ -205,6 +198,7 @@ func (s *SSHServer) SSHCopyToLocal(remote string, local string) error {
 		cwd, _ := sftpClient.Getwd()
 		remote = sftp.Join(cwd, remote)
 	}
+
 	//下载文件
 	remoteFile, err := sftpClient.Open(remote)
 	if err != nil {

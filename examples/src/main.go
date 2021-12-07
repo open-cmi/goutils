@@ -29,7 +29,7 @@ func main() {
 	fmt.Println(err)
 
 	logutils.Init(filepath.Join(rp, "log"))
-	logutils.Info.Printf("hello")
+	logutils.InfoLogger.Printf("hello")
 
 	var dbconf database.Config
 	dbconf.Type = conf.GetStringMap("model")["type"].(string)
@@ -90,11 +90,15 @@ func main() {
 
 	usr, _ := user.Current()
 	rsaFile := filepath.Join(usr.HomeDir, ".ssh/id_rsa")
-	s := goutils.NewSSHServer("110.42.144.218", 22, 1, "root", "", rsaFile)
+	s := goutils.NewSSHServer("144.34.170.126", 26942, "secret", "root", "", rsaFile)
 	client, err := s.SSHConnect()
 
 	fmt.Println(client, err)
 
 	s.SSHRun("ls")
 	s.SSHCopyToRemote("main.go", "main_remote.go")
+
+	logger := logutils.NewLogger(filepath.Join(rp, "log"))
+	logger.Printf(logutils.Debug, "hello world logutils's %s logger\n", "here")
+	logger.Println(logutils.Info, "here is", "println logger")
 }
