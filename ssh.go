@@ -41,15 +41,14 @@ func NewSSHServer(host string, port int, conntype string, user string, password 
 // SSHConnect ssh connect
 func (s *SSHServer) SSHConnect() (*ssh.Client, error) {
 	var (
-		auth         []ssh.AuthMethod
+		auth         []ssh.AuthMethod = []ssh.AuthMethod{}
 		addr         string
 		clientConfig *ssh.ClientConfig
 		client       *ssh.Client
 		err          error
 	)
+	fmt.Println(s)
 	// get auth method
-	auth = make([]ssh.AuthMethod, 0)
-
 	if s.ConnType == "password" {
 		auth = append(auth, ssh.Password(s.Password))
 	} else {
