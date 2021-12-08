@@ -96,7 +96,7 @@ func main() {
 	fmt.Println(client, err)
 
 	s.SSHRun("ls")
-	s.SSHCopyToRemote("main.go", "main_remote.go")
+	s.SSHCopyToRemote("main.go", "./main_remote.go")
 
 	logger := logutils.NewLogger(filepath.Join(rp, "log"))
 	logger.Printf(logutils.Debug, "hello world logutils's %s logger\n", "here")
