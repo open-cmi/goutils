@@ -140,7 +140,7 @@ func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
 		cwd, _ := sftpClient.Getwd()
 		remote = sftp.Join(cwd, remote)
 	}
-	//上传文件(将本地file.dat文件通过sftp传到远程服务器)
+	//上传文件,如果远端为文件夹，还需要重新拼接remote文件
 	remoteFile, err := sftpClient.Create(remote)
 	if err != nil {
 		fmt.Printf("remote server create failed: %s\n", err.Error())
