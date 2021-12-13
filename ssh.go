@@ -186,6 +186,66 @@ func (s *SSHServer) SSHCopyFileToRemote(local string, remote string) error {
 	return nil
 }
 
+func (s *SSHServer) Read(remote string) (b []byte, err error) {
+	// 建立远端连接
+	client, err := s.SSHConnect()
+	if err != nil {
+		fmt.Printf("connect server failed: %s\n", err.Error())
+		return b, err
+	}
+	defer client.Close()
+
+	sftpClient, err := sftp.NewClient(client)
+	if err != nil {
+		fmt.Printf("sftp new client failed: %s\n", err.Error())
+		return b, err
+	}
+
+	defer sftpClient.Close()
+
+	// 拼接远端绝对路径文件
+	if strings.HasPrefix(remote, "./") {
+		cwd, _ := sftpClient.Getwd()
+		remote = sftp.Join(cwd, remote)
+	}
+
+	f, err := sftpClient.Open(remote)
+	if err != nil {
+		return b, err
+	}
+	return io.ReadAll(f)
+}
+
+func (s *SSHServer) WriteString(remote string, content string) (int, error) {
+	// 建立远端连接
+	client, err := s.SSHConnect()
+	if err != nil {
+		fmt.Printf("connect server failed: %s\n", err.Error())
+		return 0, err
+	}
+	defer client.Close()
+
+	sftpClient, err := sftp.NewClient(client)
+	if err != nil {
+		fmt.Printf("sftp new client failed: %s\n", err.Error())
+		return 0, err
+	}
+
+	defer sftpClient.Close()
+
+	// 拼接远端绝对路径文件
+	if strings.HasPrefix(remote, "./") {
+		cwd, _ := sftpClient.Getwd()
+		remote = sftp.Join(cwd, remote)
+	}
+
+	f, err := sftpClient.OpenFile(remote, os.O_RDWR|os.O_CREATE|os.O_TRUNC)
+	if err != nil {
+		return 0, err
+	}
+	return io.WriteString(f, content)
+}
+
 // SSHCopyToRemote ssh copy from local to remote
 func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
 	// 检查本地文件是否存在

@@ -100,6 +100,12 @@ func main() {
 	s.SSHCopyToRemote("main.go", "./bac.go")
 	s.SSHCopyToRemote("main.go", "./")
 
+	r, err := s.Read("./main.go")
+	fmt.Println(string(r), err)
+
+	n, err := s.WriteString("./main.go", "hello remote write")
+	fmt.Println(n, err)
+
 	logger := logutils.NewLogger(filepath.Join(rp, "log"))
 	logger.Printf(logutils.Debug, "hello world logutils's %s logger\n", "here")
 	logger.Println(logutils.Info, "here is", "println logger")
