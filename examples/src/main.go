@@ -100,7 +100,7 @@ func main() {
 	s.SSHCopyToRemote("main.go", "./bac.go")
 	s.SSHCopyToRemote("main.go", "./")
 
-	r, err := s.Read("./main.go")
+	r, err := s.ReadAll("./main.go")
 	fmt.Println(string(r), err)
 
 	n, err := s.WriteString("./main.go", "hello remote write")

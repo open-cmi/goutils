@@ -186,7 +186,7 @@ func (s *SSHServer) SSHCopyFileToRemote(local string, remote string) error {
 	return nil
 }
 
-func (s *SSHServer) Read(remote string) (b []byte, err error) {
+func (s *SSHServer) ReadAll(remote string) (b []byte, err error) {
 	// 建立远端连接
 	client, err := s.SSHConnect()
 	if err != nil {
