@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -47,7 +48,6 @@ func (s *SSHServer) SSHConnect() (*ssh.Client, error) {
 		client       *ssh.Client
 		err          error
 	)
-	fmt.Println(s)
 	// get auth method
 	if s.ConnType == "password" {
 		auth = append(auth, ssh.Password(s.Password))
@@ -117,9 +117,18 @@ func (s *SSHServer) SSHRun(cmd string) error {
 	return nil
 }
 
-// SSHCopyToRemote ssh copy from local to remote
-func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
+func (s *SSHServer) SSHCopyDirToRemote(local string, remote string) error {
+	return errors.New("copy directory has not been supported")
+}
 
+func (s *SSHServer) SSHCopyFileToRemote(local string, remote string) error {
+	// 检查本地文件是否存在
+	localFileInfo, err := os.Stat(local)
+	if err != nil || localFileInfo.IsDir() {
+		return errors.New("not a regular file")
+	}
+
+	// 建立远端连接
 	client, err := s.SSHConnect()
 	if err != nil {
 		fmt.Printf("connect server failed: %s\n", err.Error())
@@ -135,12 +144,20 @@ func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
 
 	defer sftpClient.Close()
 
-	//获取当前目录
+	// 拼接远端绝对路径文件
 	if strings.HasPrefix(remote, "./") {
 		cwd, _ := sftpClient.Getwd()
 		remote = sftp.Join(cwd, remote)
 	}
-	//上传文件,如果远端为文件夹，还需要重新拼接remote文件
+
+	remoteFileInfo, err := sftpClient.Stat(remote)
+	if err == nil && remoteFileInfo.IsDir() {
+		// 如果对面是文件夹，则join
+		fileName := filepath.Base(local)
+		remote = sftp.Join(remote, fileName)
+	}
+
+	// 创建远端文件
 	remoteFile, err := sftpClient.Create(remote)
 	if err != nil {
 		fmt.Printf("remote server create failed: %s\n", err.Error())
@@ -163,16 +180,24 @@ func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
 		return err
 	}
 
-	//获取本地文件大小
+	if localFileInfo.Size() != n {
+		return errors.New("copy from local to remote failed")
+	}
+	return nil
+}
+
+// SSHCopyToRemote ssh copy from local to remote
+func (s *SSHServer) SSHCopyToRemote(local string, remote string) error {
+	// 检查本地文件是否存在
 	localFileInfo, err := os.Stat(local)
 	if err != nil {
 		return err
 	}
 
-	if localFileInfo.Size() != n {
-		return errors.New("copy from local to remote failed")
+	if !localFileInfo.IsDir() {
+		return s.SSHCopyFileToRemote(local, remote)
 	}
-	return nil
+	return s.SSHCopyDirToRemote(local, remote)
 }
 
 // SSHCopyToLocal copy to local

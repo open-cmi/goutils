@@ -97,6 +97,8 @@ func main() {
 
 	s.SSHRun("ls")
 	s.SSHCopyToRemote("main.go", "./main_remote.go")
+	s.SSHCopyToRemote("main.go", "./bac.go")
+	s.SSHCopyToRemote("main.go", "./")
 
 	logger := logutils.NewLogger(filepath.Join(rp, "log"))
 	logger.Printf(logutils.Debug, "hello world logutils's %s logger\n", "here")
