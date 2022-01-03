@@ -12,6 +12,7 @@ import (
 
 // Parser parser struct
 type Parser struct {
+	path   string
 	fd     *os.File
 	format string
 }
@@ -35,6 +36,7 @@ func New(file string) *Parser {
 		return nil
 	}
 	return &Parser{
+		path:   file,
 		fd:     fd,
 		format: format,
 	}
