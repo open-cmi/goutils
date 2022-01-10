@@ -28,9 +28,6 @@ func main() {
 	conf, err := config.InitConfig()
 	fmt.Println(err)
 
-	logutils.Init(filepath.Join(rp, "log"))
-	logutils.InfoLogger.Printf("hello")
-
 	var dbconf database.Config
 	dbconf.Type = conf.GetStringMap("model")["type"].(string)
 	dbconf.Host = conf.GetStringMap("model")["host"].(string)
@@ -106,7 +103,16 @@ func main() {
 	n, err := s.WriteString("./main.go", "hello remote write")
 	fmt.Println(n, err)
 
-	logger := logutils.NewLogger(filepath.Join(rp, "log"))
-	logger.Printf(logutils.Debug, "hello world logutils's %s logger\n", "here")
-	logger.Println(logutils.Info, "here is", "println logger")
+	option := logutils.Option{
+		Dir:        filepath.Join(rp, "log"),
+		Level:      logutils.Info,
+		Compress:   true,
+		ReserveDay: 30,
+	}
+	logger := logutils.NewLogger(&option)
+	logger.Printf(logutils.Debug, "this is debug logger %d\n", 1)
+	logger.SetLevel(logutils.Debug)
+	logger.Printf(logutils.Debug, "this is debug logger %d\n", 2)
+	logger.Println(logutils.Info, "here is", "Info logger")
+	logger.Println(logutils.Error, "here is", "Error logger")
 }
