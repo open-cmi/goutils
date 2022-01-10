@@ -11,17 +11,25 @@ import (
 // DeviceID global var
 var DeviceID string = ""
 
+var deviceIDFiles []string = []string{
+	"/sys/class/dmi/id/product_uuid",
+	"/sys/block/mmcblk0/device/serial",
+}
+
 // GetLinuxProductID func
 func GetLinuxProductID() string {
-	filePth := "/sys/class/dmi/id/product_uuid"
-	file, err := os.Open(filePth)
-	if err != nil {
-		return ""
+	for _, filep := range deviceIDFiles {
+		file, err := os.Open(filep)
+		if err != nil {
+			continue
+		}
+
+		data, _ := ioutil.ReadAll(file)
+		deviceid := strings.Trim(string(data), " \r\n\t")
+		file.Close()
+		return deviceid
 	}
-	defer file.Close()
-	data, _ := ioutil.ReadAll(file)
-	deviceid := strings.Trim(string(data), " \r\n\t")
-	return deviceid
+	return ""
 }
 
 // GetDarwinProductID func
