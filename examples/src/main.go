@@ -22,7 +22,7 @@ func main() {
 	rp := common.GetRootPath()
 	fmt.Println(rp)
 
-	cur := goutils.Getwd()
+	cur := common.Getwd()
 	fmt.Println(cur)
 
 	conf, err := config.InitConfig()
