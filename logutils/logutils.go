@@ -45,6 +45,11 @@ func NewLogger(option *Option) *Logger {
 }
 
 func (l *Logger) SetLevel(level int) {
+	if level > Error {
+		l.option.Level = Error
+		return
+	}
+
 	l.option.Level = level
 	return
 }
@@ -65,4 +70,33 @@ func (l *Logger) Println(level int, args ...interface{}) {
 
 	printer := l.printer[level]
 	printer.Println(args...)
+}
+
+func (l *Logger) Debug(format string, args ...interface{}) {
+	printer := l.printer[Debug]
+	printer.Printf(format, args...)
+}
+
+func (l *Logger) Info(format string, args ...interface{}) {
+	if Info < l.option.Level {
+		return
+	}
+	printer := l.printer[Info]
+	printer.Printf(format, args...)
+}
+
+func (l *Logger) Warn(format string, args ...interface{}) {
+	if Warn < l.option.Level {
+		return
+	}
+	printer := l.printer[Warn]
+	printer.Printf(format, args...)
+}
+
+func (l *Logger) Error(format string, args ...interface{}) {
+	if Error < l.option.Level {
+		return
+	}
+	printer := l.printer[Error]
+	printer.Printf(format, args...)
 }

@@ -115,4 +115,8 @@ func main() {
 	logger.Printf(logutils.Debug, "this is debug logger %d\n", 2)
 	logger.Println(logutils.Info, "here is", "Info logger")
 	logger.Println(logutils.Error, "here is", "Error logger")
+
+	logger.Debug("here is %s", "debug loger")
+	logger.Info("here is %s", "info loger")
+	logger.Warn("here is %s", "warn loger")
 }
