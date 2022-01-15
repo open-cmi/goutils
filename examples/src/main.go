@@ -6,23 +6,23 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/cmdctl"
-	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
-	"github.com/open-cmi/goutils/device"
-	"github.com/open-cmi/goutils/logutils"
+	"github.com/open-cmi/goutils/devutil"
+	"github.com/open-cmi/goutils/logutil"
+	"github.com/open-cmi/goutils/pathutil"
+	"github.com/open-cmi/goutils/sshutil"
 	"github.com/open-cmi/goutils/verify"
 )
 
 func main() {
-	rp := common.GetRootPath()
+	rp := pathutil.GetRootPath()
 	fmt.Println(rp)
 
-	cur := common.Getwd()
+	cur := pathutil.Getwd()
 	fmt.Println(cur)
 
 	conf, err := config.InitConfig()
@@ -76,8 +76,8 @@ func main() {
 	valid = verify.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
 
-	devid := device.GetDeviceID()
-	fmt.Printf("device id: %s\n", devid)
+	devid := devutil.GetDeviceID()
+	fmt.Printf("dev id: %s\n", devid)
 
 	output, err := cmdctl.ExecSync("ls -alh")
 	fmt.Println(output, err)
@@ -87,7 +87,7 @@ func main() {
 
 	usr, _ := user.Current()
 	rsaFile := filepath.Join(usr.HomeDir, ".ssh/id_rsa")
-	s := goutils.NewSSHServer("127.0.0.1", 2226, "password", "root", "123456", rsaFile)
+	s := sshutil.NewSSHServer("127.0.0.1", 2226, "password", "root", "123456", rsaFile)
 	client, err := s.SSHConnect()
 
 	fmt.Println(client, err)
@@ -103,18 +103,18 @@ func main() {
 	n, err := s.WriteString("./main.go", "hello remote write")
 	fmt.Println(n, err)
 
-	option := logutils.Option{
+	option := logutil.Option{
 		Dir:        filepath.Join(rp, "log"),
-		Level:      logutils.Info,
+		Level:      logutil.Info,
 		Compress:   true,
 		ReserveDay: 30,
 	}
-	logger := logutils.NewLogger(&option)
-	logger.Printf(logutils.Debug, "this is debug logger %d\n", 1)
-	logger.SetLevel(logutils.Debug)
-	logger.Printf(logutils.Debug, "this is debug logger %d\n", 2)
-	logger.Println(logutils.Info, "here is", "Info logger")
-	logger.Println(logutils.Error, "here is", "Error logger")
+	logger := logutil.NewLogger(&option)
+	logger.Printf(logutil.Debug, "this is debug logger %d\n", 1)
+	logger.SetLevel(logutil.Debug)
+	logger.Printf(logutil.Debug, "this is debug logger %d\n", 2)
+	logger.Println(logutil.Info, "here is", "Info logger")
+	logger.Println(logutil.Error, "here is", "Error logger")
 
 	logger.Debug("here is %s", "debug loger")
 	logger.Info("here is %s", "info loger")

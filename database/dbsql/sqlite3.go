@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/open-cmi/goutils"
-	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/database"
+	"github.com/open-cmi/goutils/fileutil"
+	"github.com/open-cmi/goutils/pathutil"
 
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
@@ -16,13 +16,13 @@ import (
 func SQLite3Init(conf *database.Config) (db *sql.DB, err error) {
 	dbfile := conf.File
 	if !filepath.IsAbs(conf.File) {
-		dbfile = filepath.Join(common.GetRootPath(), "data", conf.File)
+		dbfile = filepath.Join(pathutil.GetRootPath(), "data", conf.File)
 	}
 
 	// if filename is absolute path, use file name directly
 
 	var file *os.File
-	if !goutils.IsExist(dbfile) {
+	if !fileutil.IsExist(dbfile) {
 		file, err = os.OpenFile(dbfile, os.O_CREATE|os.O_RDWR, 0755)
 		if err != nil {
 			return

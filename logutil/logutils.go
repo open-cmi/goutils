@@ -1,4 +1,4 @@
-package logutils
+package logutil
 
 import (
 	"log"
@@ -6,8 +6,10 @@ import (
 	"github.com/longbozhan/timewriter"
 )
 
+type Level uint8
+
 const (
-	Debug = iota
+	Debug Level = iota
 	Info
 	Warn
 	Error
@@ -15,13 +17,13 @@ const (
 
 type Option struct {
 	Dir        string
-	Level      int
+	Level      Level
 	Compress   bool
 	ReserveDay int
 }
 
 type Logger struct {
-	printer map[int]*log.Logger
+	printer map[Level]*log.Logger
 	option  Option
 }
 
@@ -34,7 +36,7 @@ func NewLogger(option *Option) *Logger {
 		ReserveDay: option.ReserveDay, // 老化天数
 	}
 
-	logger.printer = make(map[int]*log.Logger, 0)
+	logger.printer = make(map[Level]*log.Logger, 0)
 	logger.printer[Debug] = log.New(&wr, "[DEBUG] ", log.Ldate|log.Lmicroseconds)
 	logger.printer[Info] = log.New(&wr, "[INFO] ", log.Ldate|log.Lmicroseconds)
 	logger.printer[Warn] = log.New(&wr, "[WARN] ", log.Ldate|log.Lmicroseconds)
@@ -44,7 +46,7 @@ func NewLogger(option *Option) *Logger {
 	return &logger
 }
 
-func (l *Logger) SetLevel(level int) {
+func (l *Logger) SetLevel(level Level) {
 	if level > Error {
 		l.option.Level = Error
 		return
@@ -54,7 +56,7 @@ func (l *Logger) SetLevel(level int) {
 	return
 }
 
-func (l *Logger) Printf(level int, format string, args ...interface{}) {
+func (l *Logger) Printf(level Level, format string, args ...interface{}) {
 	if level < l.option.Level || level > Error {
 		return
 	}
@@ -63,7 +65,7 @@ func (l *Logger) Printf(level int, format string, args ...interface{}) {
 	printer.Printf(format, args...)
 }
 
-func (l *Logger) Println(level int, args ...interface{}) {
+func (l *Logger) Println(level Level, args ...interface{}) {
 	if level < l.option.Level || level > Error {
 		return
 	}

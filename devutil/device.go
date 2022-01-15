@@ -1,4 +1,4 @@
-package device
+package devutil
 
 import (
 	"io/ioutil"
