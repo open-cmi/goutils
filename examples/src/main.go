@@ -15,7 +15,7 @@ import (
 	"github.com/open-cmi/goutils/logutil"
 	"github.com/open-cmi/goutils/pathutil"
 	"github.com/open-cmi/goutils/sshutil"
-	"github.com/open-cmi/goutils/verify"
+	"github.com/open-cmi/goutils/typeutil"
 )
 
 func main() {
@@ -65,15 +65,15 @@ func main() {
 	fmt.Println(yconf)
 
 	id := "00000-00-0000000-0000"
-	valid := verify.UUIDIsValid(id)
+	valid := typeutil.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
 
 	email := "fed33ei.coma"
-	valid = verify.EmailIsValid(email)
+	valid = typeutil.EmailIsValid(email)
 	fmt.Printf("email %s verify %t\n", email, valid)
 
 	id = "00000000-0000-0000-0000-000000000000"
-	valid = verify.UUIDIsValid(id)
+	valid = typeutil.UUIDIsValid(id)
 	fmt.Printf("uuid %s verify %t\n", id, valid)
 
 	devid := devutil.GetDeviceID()

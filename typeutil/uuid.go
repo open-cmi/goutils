@@ -1,4 +1,4 @@
-package verify
+package typeutil
 
 import "github.com/google/uuid"
 
