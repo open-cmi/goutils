@@ -75,6 +75,10 @@ func (l *Logger) Println(level Level, args ...interface{}) {
 }
 
 func (l *Logger) Debug(format string, args ...interface{}) {
+	if Debug < l.option.Level {
+		return
+	}
+
 	printer := l.printer[Debug]
 	printer.Printf(format, args...)
 }
