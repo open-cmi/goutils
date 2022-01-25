@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/open-cmi/goutils/cmdctl"
-	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/confparser"
 	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
@@ -18,6 +17,19 @@ import (
 	"github.com/open-cmi/goutils/typeutil"
 )
 
+type Model struct {
+	Type     string `json:"type"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Passwd   string `json:"password"`
+	Database string `json:"database"`
+}
+
+type Config struct {
+	Model Model `json:"model"`
+}
+
 func main() {
 	rp := pathutil.GetRootPath()
 	fmt.Println(rp)
@@ -25,16 +37,18 @@ func main() {
 	cur := pathutil.Getwd()
 	fmt.Println(cur)
 
-	conf, err := config.InitConfig()
-	fmt.Println(err)
+	var conf Config
+	parser := confparser.New(filepath.Join(rp, "etc", "config.yaml"))
+	parser.Load(&conf)
+	fmt.Println(conf)
 
 	var dbconf database.Config
-	dbconf.Type = conf.GetStringMap("model")["type"].(string)
-	dbconf.Host = conf.GetStringMap("model")["host"].(string)
-	dbconf.Port = conf.GetStringMap("model")["port"].(int)
-	dbconf.User = conf.GetStringMap("model")["user"].(string)
-	dbconf.Password = conf.GetStringMap("model")["password"].(string)
-	dbconf.Database = conf.GetStringMap("model")["database"].(string)
+	dbconf.Type = conf.Model.Type
+	dbconf.Host = conf.Model.Host
+	dbconf.Port = conf.Model.Port
+	dbconf.User = conf.Model.User
+	dbconf.Password = conf.Model.Passwd
+	dbconf.Database = conf.Model.Database
 
 	db, err := dbsql.SQLInit(&dbconf)
 	if err == nil {
@@ -58,11 +72,6 @@ func main() {
 			fmt.Printf("username: %s\n", name)
 		}
 	}
-
-	var yconf map[string]interface{}
-	parser := confparser.New(filepath.Join(rp, "etc", "config.yaml"))
-	parser.Load(&yconf)
-	fmt.Println(yconf)
 
 	id := "00000-00-0000000-0000"
 	valid := typeutil.UUIDIsValid(id)
