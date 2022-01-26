@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-func EncryptPasswd(passwd string) string {
-	return ""
-}
-
 // ChangePasswd change os user passwd
 func ChangePasswd(user string, encryptPasswd string) error {
 	file, err := os.OpenFile("/etc/shadow", os.O_RDWR, 0644)

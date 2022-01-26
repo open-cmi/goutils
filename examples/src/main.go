@@ -14,6 +14,7 @@ import (
 	"github.com/open-cmi/goutils/logutil"
 	"github.com/open-cmi/goutils/pathutil"
 	"github.com/open-cmi/goutils/sshutil"
+	"github.com/open-cmi/goutils/sysutil"
 	"github.com/open-cmi/goutils/typeutil"
 )
 
@@ -128,4 +129,18 @@ func main() {
 	logger.Debug("here is %s", "debug loger")
 	logger.Info("here is %s", "info loger")
 	logger.Warn("here is %s", "warn loger")
+
+	hostname := sysutil.GetHostName()
+	fmt.Printf("host name: %s\n", hostname)
+
+	type Col struct {
+		A string `json:"a"`
+		B string `json:"b"`
+		C string `json:"c"`
+		D string `db:"d"`
+		F string
+	}
+	var col Col
+	columns := typeutil.GetColumn(col, "json")
+	fmt.Println(columns)
 }
