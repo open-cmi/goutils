@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/google/uuid v1.2.0
+	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/lib/pq v1.10.0
 	github.com/longbozhan/timewriter v0.0.0-20190103122845-eca5e0205a32
 	github.com/mattn/go-sqlite3 v1.14.6

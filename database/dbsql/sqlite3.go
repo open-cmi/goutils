@@ -1,7 +1,6 @@
 package dbsql
 
 import (
-	"database/sql"
 	"os"
 	"path/filepath"
 
@@ -9,11 +8,12 @@ import (
 	"github.com/open-cmi/goutils/fileutil"
 	"github.com/open-cmi/goutils/pathutil"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" // Import go-sqlite3 library
 )
 
 // SQLite3Init init
-func SQLite3Init(conf *database.Config) (db *sql.DB, err error) {
+func SQLite3Init(conf *database.Config) (db *sqlx.DB, err error) {
 	dbfile := conf.File
 	if !filepath.IsAbs(conf.File) {
 		dbfile = filepath.Join(pathutil.GetRootPath(), "data", conf.File)
@@ -30,6 +30,6 @@ func SQLite3Init(conf *database.Config) (db *sql.DB, err error) {
 		defer file.Close()
 	}
 
-	db, err = sql.Open("sqlite3", dbfile)
+	db, err = sqlx.Open("sqlite3", dbfile)
 	return db, err
 }

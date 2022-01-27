@@ -1,15 +1,16 @@
 package dbsql
 
 import (
-	"database/sql"
 	"fmt"
 
 	_ "github.com/lib/pq"
 	"github.com/open-cmi/goutils/database"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // PostgresqlInit init
-func PostgresqlInit(conf *database.Config) (db *sql.DB, err error) {
+func PostgresqlInit(conf *database.Config) (db *sqlx.DB, err error) {
 	host := conf.Host
 	port := conf.Port
 	user := conf.User
@@ -17,7 +18,7 @@ func PostgresqlInit(conf *database.Config) (db *sql.DB, err error) {
 	database := conf.Database
 
 	dbstr := fmt.Sprintf("postgres://%s:%s@%s:%d/postgres?sslmode=disable", user, password, host, port)
-	db, err = sql.Open("postgres", dbstr)
+	db, err = sqlx.Open("postgres", dbstr)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,7 @@ func PostgresqlInit(conf *database.Config) (db *sql.DB, err error) {
 	db.Close()
 
 	dbstr = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", user, password, host, port, database)
-	db, err = sql.Open("postgres", dbstr)
+	db, err = sqlx.Open("postgres", dbstr)
 	if err != nil {
 		return nil, err
 	}

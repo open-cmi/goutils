@@ -1,16 +1,16 @@
 package dbsql
 
 import (
-	"database/sql"
 	"errors"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/open-cmi/goutils/database"
 )
 
 var maxConnections int = 50
 
 // SQLInit init
-func SQLInit(conf *database.Config) (db *sql.DB, err error) {
+func SQLInit(conf *database.Config) (db *sqlx.DB, err error) {
 	// Mongo, _ = database.NewMongoDB("usual", 27017, "test")
 	dbtype := conf.Type
 	if dbtype == "sqlite3" {
