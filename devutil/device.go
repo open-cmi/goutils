@@ -8,9 +8,6 @@ import (
 	"strings"
 )
 
-// DeviceID global var
-var DeviceID string = ""
-
 var deviceIDFiles []string = []string{
 	"/sys/class/dmi/id/product_uuid",
 	"/sys/block/mmcblk0/device/serial",
@@ -25,7 +22,7 @@ func GetLinuxProductID() string {
 		}
 
 		data, _ := ioutil.ReadAll(file)
-		deviceid := strings.Trim(string(data), " \r\n\t")
+		deviceid := strings.Trim(string(data), " \r\n\t ")
 		file.Close()
 		return deviceid
 	}
@@ -58,9 +55,7 @@ func GetDarwinProductID() string {
 	if len(arr) != 2 {
 		return ""
 	}
-	deviceid := strings.Trim(arr[1], " ")
-	deviceid = strings.Trim(deviceid, "\n")
-	deviceid = strings.Trim(deviceid, "\"")
+	deviceid := strings.Trim(arr[1], "\t\n\" ")
 	return deviceid
 }
 
@@ -68,10 +63,6 @@ func GetDarwinProductID() string {
 func GetDeviceID() string {
 	var deviceid string
 	var sys string
-
-	if DeviceID != "" {
-		return DeviceID
-	}
 
 	sys = runtime.GOOS
 	if sys == "darwin" {
@@ -82,6 +73,5 @@ func GetDeviceID() string {
 		deviceid = GetLinuxProductID()
 	}
 
-	DeviceID = deviceid
 	return deviceid
 }
