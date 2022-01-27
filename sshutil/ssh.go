@@ -91,7 +91,6 @@ func (s *SSHServer) SSHRun(cmd string) error {
 
 	client, err := s.SSHConnect()
 	if err != nil {
-		fmt.Printf("connect server failed: %s\n", err.Error())
 		return err
 	}
 	defer client.Close()
@@ -106,15 +105,28 @@ func (s *SSHServer) SSHRun(cmd string) error {
 	session.Stderr = &stdErr
 
 	err = session.Run(cmd)
+	return err
+}
+
+// SSHOutput run command and get ouput
+func (s *SSHServer) SSHOutput(cmd string) (output []byte, err error) {
+	client, err := s.SSHConnect()
 	if err != nil {
-		fmt.Printf("remote server run command failed: %s\n", err.Error())
-		return err
+		return []byte{}, err
 	}
-	if stdErr.String() != "" {
-		return errors.New(stdErr.String())
+	defer client.Close()
+
+	// create session
+	session, err := client.NewSession()
+	if err != nil {
+		return []byte{}, err
 	}
-	fmt.Printf("%s\n", stdOut.String())
-	return nil
+
+	output, err = session.Output(cmd)
+	if err != nil {
+		return []byte{}, err
+	}
+	return output, nil
 }
 
 func (s *SSHServer) SSHCopyDirToRemote(local string, remote string) error {

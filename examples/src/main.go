@@ -103,6 +103,8 @@ func main() {
 	fmt.Println(client, err)
 
 	s.SSHRun("ls")
+	outbyte, err := s.SSHOutput("ls")
+	fmt.Println(string(outbyte), err)
 	s.SSHCopyToRemote("main.go", "./main_remote.go")
 	s.SSHCopyToRemote("main.go", "./bac.go")
 	s.SSHCopyToRemote("main.go", "./")
