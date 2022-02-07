@@ -89,9 +89,6 @@ func main() {
 	devid := devutil.GetDeviceID()
 	fmt.Printf("dev id: %s\n", devid)
 
-	output, err := cmdctl.ExecSync("ls -alh")
-	fmt.Println(output, err)
-
 	ppid := os.Getppid()
 	fmt.Println(cmdctl.ParentIsRunning(ppid))
 
