@@ -12,6 +12,7 @@ import (
 	"github.com/open-cmi/goutils/database/dbsql"
 	"github.com/open-cmi/goutils/devutil"
 	"github.com/open-cmi/goutils/logutil"
+	"github.com/open-cmi/goutils/netutil"
 	"github.com/open-cmi/goutils/pathutil"
 	"github.com/open-cmi/goutils/sshutil"
 	"github.com/open-cmi/goutils/sysutil"
@@ -142,4 +143,10 @@ func main() {
 	var col Col
 	columns := typeutil.GetColumn(col, "json")
 	fmt.Println(columns)
+
+	stat := netutil.PingCheck("baidu.com", 5)
+	fmt.Println(stat)
+
+	ret, err := netutil.CurlCheck("baidu.com")
+	fmt.Println(ret, err)
 }
