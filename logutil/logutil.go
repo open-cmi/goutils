@@ -53,7 +53,6 @@ func (l *Logger) SetLevel(level Level) {
 	}
 
 	l.option.Level = level
-	return
 }
 
 func (l *Logger) Printf(level Level, format string, args ...interface{}) {
@@ -74,7 +73,7 @@ func (l *Logger) Println(level Level, args ...interface{}) {
 	printer.Println(args...)
 }
 
-func (l *Logger) Debug(format string, args ...interface{}) {
+func (l *Logger) Debugf(format string, args ...interface{}) {
 	if Debug < l.option.Level {
 		return
 	}
@@ -83,7 +82,16 @@ func (l *Logger) Debug(format string, args ...interface{}) {
 	printer.Printf(format, args...)
 }
 
-func (l *Logger) Info(format string, args ...interface{}) {
+func (l *Logger) Debug(args ...interface{}) {
+	if Debug < l.option.Level {
+		return
+	}
+
+	printer := l.printer[Debug]
+	printer.Println(args...)
+}
+
+func (l *Logger) Infof(format string, args ...interface{}) {
 	if Info < l.option.Level {
 		return
 	}
@@ -91,7 +99,15 @@ func (l *Logger) Info(format string, args ...interface{}) {
 	printer.Printf(format, args...)
 }
 
-func (l *Logger) Warn(format string, args ...interface{}) {
+func (l *Logger) Info(args ...interface{}) {
+	if Info < l.option.Level {
+		return
+	}
+	printer := l.printer[Info]
+	printer.Println(args...)
+}
+
+func (l *Logger) Warnf(format string, args ...interface{}) {
 	if Warn < l.option.Level {
 		return
 	}
@@ -99,10 +115,26 @@ func (l *Logger) Warn(format string, args ...interface{}) {
 	printer.Printf(format, args...)
 }
 
-func (l *Logger) Error(format string, args ...interface{}) {
+func (l *Logger) Warn(args ...interface{}) {
+	if Warn < l.option.Level {
+		return
+	}
+	printer := l.printer[Warn]
+	printer.Println(args...)
+}
+
+func (l *Logger) Errorf(format string, args ...interface{}) {
 	if Error < l.option.Level {
 		return
 	}
 	printer := l.printer[Error]
 	printer.Printf(format, args...)
+}
+
+func (l *Logger) Error(args ...interface{}) {
+	if Error < l.option.Level {
+		return
+	}
+	printer := l.printer[Error]
+	printer.Println(args...)
 }
