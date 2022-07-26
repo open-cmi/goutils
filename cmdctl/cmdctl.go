@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -13,49 +14,62 @@ import (
 // Status the status of process
 
 const (
+	// Waiting wait to start
+	Waiting int = iota
+
 	// Stopped the stopped status
-	Stopped int = iota
+	Stopped
 
 	// Starting the starting status
-	Starting = 10
+	Starting
 
 	// Running the running status
-	Running = 20
+	Running
 
 	// Backoff the backoff status
-	Backoff = 30
+	Backoff
 
 	// Stopping the stopping status
-	Stopping = 40
+	Stopping
 
 	// Exited the Exited status
-	Exited = 100
+	Exited
 
 	// Fatal the Fatal status
-	Fatal = 200
+	Fatal
 
 	// Unknown the unknown status
-	Unknown = 1000
+	Unknown
 )
 
-// ProcessConfig process config
-type ProcessConfig struct {
-	ExecStart        string
-	User             string
-	Group            string
-	ExecOnce         bool
-	RestartSec       int
-	WorkingDirectory string
-	SyncExec         bool //是否同步执行，同步执行，会等待程序结果退出
+// Config process config
+type Config struct {
+	Name       string
+	ExecStart  string
+	RestartSec int
+	StopSignal int
+}
+
+type RunningInfo struct {
+	Status   int
+	ErrMsg   string
+	TryStart uint32
 }
 
 // Process struct
 type Process struct {
-	Config      ProcessConfig
-	Name        string
-	cmd         *exec.Cmd
-	Status      int
-	UserStopped bool
+	Mutex     sync.Mutex
+	Config    Config
+	cmd       *exec.Cmd
+	Status    int
+	ErrMsg    string
+	TryStart  uint32
+	ForceStop bool
+}
+
+type Manager struct {
+	Mutex sync.Mutex
+	Procs map[string]*Process
 }
 
 // ProcessContainer container
@@ -65,24 +79,45 @@ var ProcessContainer map[string]*Process
 func (p *Process) Start() error {
 	cmdstring := p.Config.ExecStart
 
+	// 这里有bug，当参数值中含有空格时，会导致split出问题
 	args := strings.Split(cmdstring, " ")
-	// 启动时，需要设置userstopped为false，否则无法启动
-	p.UserStopped = false
+
+	p.ForceStop = false
 
 	go func() {
-		for !p.UserStopped && !p.Config.ExecOnce {
-			cmd := exec.Command(args[0], args[1:]...)
+		for !p.ForceStop {
+			var cmd *exec.Cmd
+			if len(args) > 1 {
+				cmd = exec.Command(args[0], args[1:]...)
+			} else {
+				cmd = exec.Command(args[0])
+			}
 			cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-			p.cmd = cmd
+			p.Status = Starting
 			err := cmd.Start()
+			p.TryStart++
 			if err == nil {
+				p.Mutex.Lock()
+				p.cmd = cmd
+				p.Mutex.Unlock()
+				// 等待退出
 				err = cmd.Wait()
+				if err != nil {
+					p.ErrMsg = err.Error()
+				}
+				p.Mutex.Lock()
+				p.cmd = nil
+				p.Mutex.Unlock()
+				p.Status = Exited
+			} else {
+				p.ErrMsg = err.Error()
 				p.Status = Exited
 			}
 			if p.Config.RestartSec != 0 {
 				time.Sleep(time.Second * time.Duration(p.Config.RestartSec))
 			}
 		}
+		p.Status = Stopped
 	}()
 
 	return nil
@@ -90,7 +125,7 @@ func (p *Process) Start() error {
 
 // Stop stop process
 func (p *Process) Stop() (err error) {
-	p.UserStopped = true
+	p.ForceStop = true
 	if p.cmd != nil && p.cmd.Process != nil {
 		err = p.cmd.Process.Signal(syscall.SIGINT)
 	}
@@ -100,7 +135,14 @@ func (p *Process) Stop() (err error) {
 
 // GetStatus get status
 func (p *Process) GetStatus() int {
-	return Running
+	return p.Status
+}
+
+func (p *Process) ShowRunningInfo() (ri RunningInfo) {
+	ri.ErrMsg = p.ErrMsg
+	ri.Status = p.Status
+	ri.TryStart = p.TryStart
+	return
 }
 
 // IsRunning is running
@@ -115,64 +157,71 @@ func (p *Process) IsRunning() bool {
 	return false
 }
 
-// IsRunning is running
-func IsRunning(name string) bool {
-	p := ProcessContainer[name]
+func NewManager() *Manager {
+	return &Manager{
+		Procs: make(map[string]*Process),
+	}
+}
+
+func (m *Manager) AddProcess(conf *Config) error {
+	if m.Procs[conf.Name] != nil {
+		return errors.New("process exist")
+	}
+	p := new(Process)
+	p.Config = *conf
+	p.Status = Waiting
+	m.Procs[conf.Name] = p
+	return nil
+}
+
+func (m *Manager) DelProcess(name string) error {
+	p := m.Procs[name]
+	if p == nil {
+		return errors.New("process not exist")
+	}
+	p.Stop()
+	m.Procs[name] = nil
+	return nil
+}
+
+func (m *Manager) StartProcess(name string) error {
+	p := m.Procs[name]
+	if p == nil {
+		return errors.New("process not exist")
+	}
+	return p.Start()
+}
+
+func (m *Manager) StopProcess(name string) error {
+	p := m.Procs[name]
+	if p == nil {
+		return errors.New("process not exist")
+	}
+	return p.Stop()
+}
+
+func (m *Manager) IsRunning(name string) bool {
+	p := m.Procs[name]
 	if p == nil {
 		return false
 	}
 	return p.IsRunning()
 }
 
+func (m *Manager) ShowRunningInfo(name string) (ri RunningInfo) {
+	p := m.Procs[name]
+	if p == nil {
+		return ri
+	}
+	return p.ShowRunningInfo()
+}
+
 // Exist process exist
-func Exist(name string) bool {
-	p := ProcessContainer[name]
-	if p != nil {
-		return true
-	}
-	return false
+func (m *Manager) Exist(name string) bool {
+	return m.Procs[name] != nil
 }
 
-// New new a process
-func New(name string, conf *ProcessConfig) error {
-	if ProcessContainer[name] != nil {
-		return errors.New("process exist")
-	}
-
-	p := &Process{
-		Config: *conf,
-	}
-	ProcessContainer[name] = p
-	return nil
-}
-
-// Start start process async
-func Start(name string) (err error) {
-	p := ProcessContainer[name]
-	if p == nil {
-		return errors.New("process not exist")
-	}
-
-	err = p.Start()
-	return err
-}
-
-// Stop stop process
-func Stop(name string) (err error) {
-	p := ProcessContainer[name]
-	if p == nil {
-		return errors.New("process not exist")
-	}
-	p.Stop()
-	return err
-}
-
-// Release release process
-func (p *Process) Release() {
-	ProcessContainer[p.Name] = nil
-}
-
-// ExecSync exec command sync
+// Deprecated: ExecSync is deprecated
 func ExecSync(cmdstring string) (string, error) {
 	args := strings.Split(cmdstring, " ")
 	var cmd *exec.Cmd
@@ -184,8 +233,4 @@ func ExecSync(cmdstring string) (string, error) {
 
 	outbyte, err := cmd.Output()
 	return string(outbyte), err
-}
-
-func init() {
-	ProcessContainer = make(map[string]*Process, 1)
 }

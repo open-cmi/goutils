@@ -5,24 +5,30 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	var pc ProcessConfig = ProcessConfig{
-		ExecStart: "echo",
-	}
-	err := New("test", &pc)
-	if err != nil {
-		t.Errorf("test: new process 1 failed")
-	}
-	err = New("test", &pc)
-	if err == nil {
-		t.Errorf("test: new process failed")
+	manager := NewManager()
+	var conf Config = Config{
+		Name:       "test",
+		ExecStart:  "echo 1",
+		RestartSec: 1,
+		StopSignal: 2,
 	}
 
-	err = New("test2", &pc)
+	err := manager.AddProcess(&conf)
 	if err != nil {
-		t.Errorf("test: new process 1 failed")
+		t.Errorf("test: add process 1 failed")
 	}
 
-	if !Exist("test2") {
-		t.Errorf("test: exist test failed")
+	err = manager.StartProcess("test")
+	if err != nil {
+		t.Errorf("test: start process failed")
+	}
+
+	err = manager.StopProcess("test")
+	if err != nil {
+		t.Errorf("test: stop process failed")
+	}
+	err = manager.DelProcess("test")
+	if err != nil {
+		t.Errorf("test: delete process failed")
 	}
 }
