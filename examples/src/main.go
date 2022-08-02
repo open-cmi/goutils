@@ -40,7 +40,7 @@ func main() {
 	fmt.Println(cur)
 
 	var conf Config
-	parser := confparser.New(filepath.Join(rp, "etc", "config.yaml"))
+	parser := confparser.NewParser(filepath.Join(rp, "etc", "config.yaml"))
 	parser.Load(&conf)
 	fmt.Println(conf)
 
@@ -126,9 +126,9 @@ func main() {
 	logger.Println(logutil.Info, "here is", "Info logger")
 	logger.Println(logutil.Error, "here is", "Error logger")
 
-	logger.Debug("here is %s", "debug loger")
-	logger.Info("here is %s", "info loger")
-	logger.Warn("here is %s", "warn loger")
+	logger.Debug("here is", "debug loger")
+	logger.Info("here is", "info loger")
+	logger.Warn("here is", "warn loger")
 
 	hostname := sysutil.GetHostName()
 	fmt.Printf("host name: %s\n", hostname)

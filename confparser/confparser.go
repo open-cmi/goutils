@@ -17,8 +17,8 @@ type Parser struct {
 	format string
 }
 
-// New create a new parser
-func New(file string) *Parser {
+// NewParser create a new parser
+func NewParser(file string) *Parser {
 	if file == "" {
 		return nil
 	}
