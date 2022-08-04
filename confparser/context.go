@@ -81,5 +81,7 @@ func (c *Context) Save() {
 			c.Conf[name] = str
 		}
 	}
-	c.parser.Save(c.Conf)
+	if c.parser != nil {
+		c.parser.Save(c.Conf)
+	}
 }
