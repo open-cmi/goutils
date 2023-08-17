@@ -5,13 +5,10 @@ import (
 	"errors"
 )
 
-type InitFunc func(json.RawMessage) error
-type SaveFunc func() json.RawMessage
-
 type Option struct {
-	Name string
-	Init InitFunc
-	Save SaveFunc
+	Name      string
+	ParseFunc func(json.RawMessage) error
+	SaveFunc  func() json.RawMessage
 }
 
 // Context config context
@@ -33,11 +30,11 @@ func (c *Context) Register(opt *Option) error {
 	if found {
 		return errors.New("config " + opt.Name + " has been registered")
 	}
-	if opt.Init == nil {
+	if opt.ParseFunc == nil {
 		return errors.New("init func should not be empty")
 	}
 
-	if opt.Save == nil {
+	if opt.SaveFunc == nil {
 		return errors.New("save func should not be empty")
 	}
 	c.options[opt.Name] = *opt
@@ -61,8 +58,8 @@ func (c *Context) Load(configfile string) error {
 	for name, option := range c.options {
 		value, ok := c.Conf[name]
 		if ok {
-			if option.Init != nil {
-				err := option.Init(value)
+			if option.ParseFunc != nil {
+				err := option.ParseFunc(value)
 				if err != nil {
 					return err
 				}
@@ -76,8 +73,8 @@ func (c *Context) Load(configfile string) error {
 // Save save config
 func (c *Context) Save() {
 	for name, option := range c.options {
-		if option.Save != nil {
-			str := option.Save()
+		if option.SaveFunc != nil {
+			str := option.SaveFunc()
 			c.Conf[name] = str
 		}
 	}

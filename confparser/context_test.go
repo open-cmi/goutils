@@ -33,11 +33,11 @@ func TestConfig1(t *testing.T) {
 
 	var opt Option
 	opt.Name = "transport2"
-	opt.Init = func(raw json.RawMessage) error {
+	opt.ParseFunc = func(raw json.RawMessage) error {
 		return nil
 	}
 
-	opt.Save = func() json.RawMessage {
+	opt.SaveFunc = func() json.RawMessage {
 		v, _ := json.Marshal(master)
 		return v
 	}
